@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Activities</title>
+
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background: linear-gradient(135deg,#00b894,#0984e3);
+}
+
+.navbar{
+  position: relative;
+  z-index: 5;
+  display:flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap:wrap;
+  padding:10px 20px;
+  background: rgba(238, 237, 237, 0.35);
+  backdrop-filter: blur(6px);
+}
+.logo {
+  height:90px; 
+  margin-right:30px;
+  cursor:pointer;
+}
+.navbar button{
+  background:#74b9ff;
+  border:none;
+  padding:10px;
+  border-radius:8px;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+  flex:1;
+  margin:3px;
+  transition:0.3s;
+}
+.navbar button:hover{
+  background:#0984e3;
+  transform: translateY(-2px);
+}
+
+.section{
+  background:#fff;
+  margin:15px auto;
+  padding:25px;
+  border-radius:15px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+  max-width:800px;
+}
+h2{
+  text-align:center;
+  margin-bottom:20px;
+  color:#0984e3;
+  text-shadow:1px 1px #74b9ff;
+}
+
+#activitiesContainer{
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+.activity-wrapper{
+  position:relative;
+}
+
+.activity{
+  background: linear-gradient(135deg,#74b9ff,#a29bfe);
+  color:#fff;
+  padding:15px 20px;
+  border-radius:12px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor:text;
+  white-space:pre-line;
+}
+.activity:hover{
+  transform: translateY(-3px);
+  box-shadow:0 8px 25px rgba(0,0,0,0.3);
+}
+.activity[contenteditable="true"]:focus{
+  outline:3px solid #ffeaa7;
+  box-shadow:0 8px 25px rgba(0,0,0,0.4);
+}
+
+button.delete{
+  position:absolute;
+  top:8px;
+  right:8px;
+  background:#637df0;
+  color:#fff;
+  border:none;
+  padding:6px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:bold;
+}
+button.delete:hover{
+  background:#b71540;
+}
+
+button.action{
+  background:#0984e3;
+  color:#fff;
+  border:none;
+  padding:10px 15px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+  margin-top:20px;
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+  transition: transform 0.2s, background 0.2s;
+}
+button.action:hover{
+  background:#0652dd;
+  transform: scale(1.05);
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <img src="VHBC.png" alt="VHBC Logo" class="logo" onclick="location.href='index.html'">
+  <button onclick="location.href='index.html'">Home</button>
+  <button onclick="location.href='report.html'">Report</button>
+  <button onclick="location.href='tripping.html'">Tripping & Sales</button>
+  <button onclick="location.href='manning.html'">Manning</button>
+  <button onclick="location.href='activities.html'">Activities</button>
+  <button onclick="location.href='lot-calculator.html'">Lot Calculator</button>
+</div>
+
+<div class="section">
+  <h2>Activities</h2>
+  <div id="activitiesContainer"></div>
+  <button class="action" onclick="addActivity()">+ Add Activity</button>
+</div>
+
+<script>
+
+function loadActivities(){
+  const container = document.getElementById('activitiesContainer');
+  container.innerHTML = '';
+
+  const saved = JSON.parse(localStorage.getItem('activities')) || [];
+
+  saved.forEach(text => {
+    createActivity(text);
+  });
+}
+
+function saveActivities(){
+  const activities = [];
+  document.querySelectorAll('.activity').forEach(div=>{
+    activities.push(div.innerText);
+  });
+  localStorage.setItem('activities', JSON.stringify(activities));
+}
+
+
+function createActivity(text){
+  const container = document.getElementById('activitiesContainer');
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'activity-wrapper';
+
+  const div = document.createElement('div');
+  div.className = 'activity';
+  div.contentEditable = "true";
+  div.innerText = text;
+  div.oninput = saveActivities;
+
+  const delBtn = document.createElement('button');
+  delBtn.className = 'delete';
+  delBtn.textContent = 'Delete';
+  delBtn.onclick = () => {
+    if(confirm('Delete this activity?')){
+      wrapper.remove();
+      saveActivities();
+
+    }
+  };
+
+  wrapper.appendChild(div);
+  wrapper.appendChild(delBtn);
+  container.appendChild(wrapper);
+}
+
+
+function addActivity(){
+  createActivity("New Activity");
+  saveActivities();
+}
+
+
+loadActivities();
+</script>
+
+</body>
+</html>
