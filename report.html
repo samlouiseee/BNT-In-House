@@ -6,28 +6,23 @@
 <title>Weekly Report</title>
 
 <style>
+*{box-sizing:border-box}
+
 body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-family:Segoe UI, sans-serif;
   background:linear-gradient(135deg,#00b894,#0984e3);
 }
+
 .navbar{
-  position:relative;
-  z-index:5;
   display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  flex-wrap:wrap;
+  gap:10px;
   padding:10px 20px;
-  background:rgba(238, 237, 237, 0.35);
-  backdrop-filter: blur(6px);
-}
-.logo {
-  height:90px; 
-  margin-right:30px;
-  cursor:pointer;
+  background:rgba(238,237,237,.35);
+  backdrop-filter:blur(6px);
 }
 .navbar button{
+  flex:1;
   background:#74b9ff;
   border:none;
   padding:10px;
@@ -35,59 +30,82 @@ body{
   color:#fff;
   font-weight:bold;
   cursor:pointer;
-  flex:1;
-  margin:3px;
 }
-.navbar button:hover{background:#0984e3}
 
+.container{
+  display:flex;
+  gap:15px;
+  padding:15px;
+}
+
+.folders{
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  padding:10px;
+}
+
+.folder{
+  background:#f1f1f1;
+  padding:8px;
+  border-radius:6px;
+  margin-bottom:5px;
+  cursor:pointer;
+}
+.folder.active{
+  background:#0984e3;
+  color:#fff;
+}
 
 .section{
+  flex:1;
   background:#fff;
-  margin:10px;
   padding:20px;
   border-radius:12px;
-  box-shadow:0 8px 20px rgba(0,0,0,.2);
+  position:relative;
 }
 
-h2{text-align:center}
+/* PLACEHOLDER */
+.placeholder{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100%;
+  min-height:300px;
+  font-size:28px;
+  font-weight:700;
+  color:#b2b2b2;
+  letter-spacing:1px;
+}
 
-
+/* TABLE */
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:20px;
-  font-size:14px;
+  margin-top:10px;
 }
-th, td{
+th,td{
   border:1px solid #aaa;
   padding:6px;
+  text-align:center;
   vertical-align:top;
-  text-align:center; 
 }
 th{background:#f2f2f2}
 
-
-input.editable, textarea.editable{
-  width:90%;
-  box-sizing:border-box;
+input, textarea{
+  width:95%;
   border:1px solid #ccc;
   border-radius:4px;
   padding:4px;
-  font-size:14px;
   font-family:inherit;
-  line-height:1.3;
-  text-align:left; 
+  font-size:14px;
+}
+
+textarea{
   resize:none;
-  margin:auto;
-  display:block;
-}
-
-
-textarea.editable{
-  min-height:60px;
   overflow:hidden;
+  min-height:60px;
 }
-
 
 button.action{
   background:#0984e3;
@@ -98,13 +116,12 @@ button.action{
   cursor:pointer;
   margin-top:10px;
 }
-button.action:hover{background:#0652dd}
 </style>
 </head>
+
 <body>
 
 <div class="navbar">
-  <img src="VHBC.png" alt="VHBC Logo" class="logo" onclick="location.href='index.html'">
   <button onclick="location.href='index.html'">Home</button>
   <button onclick="location.href='report.html'">Report</button>
   <button onclick="location.href='tripping.html'">Tripping & Sales</button>
@@ -113,83 +130,164 @@ button.action:hover{background:#0652dd}
   <button onclick="location.href='lot-calculator.html'">Lot Calculator</button>
 </div>
 
-<div class="section">
-  <h2>Weekly Report</h2>
+<div class="container">
 
-  <table id="reportTable">
+  <!-- LEFT -->
+  <div class="folders">
+    <h3>Folders</h3>
+    <div id="folderList"></div>
+    <button class="action" onclick="addFolder()">Add Folder</button>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="section" id="rightPanel">
+
+    <!-- DEFAULT PLACEHOLDER -->
+    <div id="placeholder" class="placeholder">
+      IN-HOUSE WEEKLY REPORTS
+    </div>
+
+    <!-- TABLE WRAPPER -->
+    <div id="tableWrapper" style="display:none;">
+      <h2 id="title"></h2>
+
+      <table id="reportTable">
+        <tr>
+          <th>Date</th>
+          <th>Team</th>
+          <th>Weekly Report</th>
+          <th>Delete</th>
+        </tr>
+      </table>
+
+      <button class="action" onclick="addRow()">Add Row</button>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+let currentFolder = null;
+
+/* STORAGE */
+function getData(){
+  return JSON.parse(localStorage.getItem("weeklyReportFolders") || "{}");
+}
+function saveData(data){
+  localStorage.setItem("weeklyReportFolders", JSON.stringify(data));
+}
+
+/* AUTO EXPAND */
+function autoExpand(el){
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + "px";
+}
+
+/* FOLDERS */
+function addFolder(){
+  const name = prompt("Folder name (e.g. November 2025)");
+  if(!name) return;
+
+  const data = getData();
+  if(data[name]) return alert("Folder already exists");
+
+  data[name] = [];
+  saveData(data);
+  openFolder(name);
+}
+
+function renderFolders(){
+  const list = document.getElementById("folderList");
+  list.innerHTML = "";
+  const data = getData();
+
+  Object.keys(data).forEach(name=>{
+    const div = document.createElement("div");
+    div.className = "folder" + (name===currentFolder?" active":"");
+    div.textContent = name;
+    div.onclick = ()=>openFolder(name);
+    list.appendChild(div);
+  });
+}
+
+function openFolder(name){
+  currentFolder = name;
+
+  document.getElementById("placeholder").style.display = "none";
+  document.getElementById("tableWrapper").style.display = "block";
+
+  document.getElementById("title").textContent = name;
+  renderFolders();
+  loadTable();
+}
+
+/* TABLE */
+function loadTable(){
+  const table = document.getElementById("reportTable");
+  table.innerHTML = `
     <tr>
       <th>Date</th>
       <th>Team</th>
       <th>Weekly Report</th>
+      <th>Delete</th>
     </tr>
-  </table>
+  `;
 
-  <button class="action" onclick="addRow()">Add Row</button>
-</div>
+  const data = getData();
+  data[currentFolder].forEach((row,i)=>{
+    const tr = table.insertRow();
+    tr.innerHTML = `
+      <td><input value="${row[0]}"></td>
+      <td><input value="${row[1]}"></td>
+      <td><textarea>${row[2]}</textarea></td>
+      <td><button onclick="deleteRow(${i})">X</button></td>
+    `;
 
-<script>
-function saveData(){
-  const table = document.getElementById('reportTable');
-  const data = [];
-  Array.from(table.rows).forEach((row, rIndex)=>{
-    if(rIndex === 0) return;
-    const rowData = [];
-    rowData.push(row.cells[0].querySelector('input').value);
-    rowData.push(row.cells[1].querySelector('input').value);
-    rowData.push(row.cells[2].querySelector('textarea').value);
-    data.push(rowData);
-  });
-  localStorage.setItem('reportTable', JSON.stringify(data));
-}
-
-function loadData(){
-  const data = JSON.parse(localStorage.getItem('reportTable') || '[]');
-  data.forEach(rowData => addRow(rowData[0], rowData[1], rowData[2]));
-}
-
-
-function autoExpand(textarea){
-  textarea.style.height = 'auto';
-  textarea.style.height = textarea.scrollHeight + 'px';
-}
-
-function addRow(dateValue="", teamValue="", reportValue=""){
-  const table = document.getElementById('reportTable');
-  const row = table.insertRow(-1);
-
-
-  const cell1 = row.insertCell();
-  const inputDate = document.createElement('input');
-  inputDate.className = 'editable';
-  inputDate.value = dateValue;
-  inputDate.oninput = saveData;
-  cell1.appendChild(inputDate);
-
-
-  const cell2 = row.insertCell();
-  const inputTeam = document.createElement('input');
-  inputTeam.className = 'editable';
-  inputTeam.value = teamValue;
-  inputTeam.oninput = saveData;
-  cell2.appendChild(inputTeam);
-
-
-  const cell3 = row.insertCell();
-  const textarea = document.createElement('textarea');
-  textarea.className = 'editable';
-  textarea.value = reportValue;
-  textarea.oninput = () => {
+    const textarea = tr.querySelector("textarea");
     autoExpand(textarea);
-    saveData();
-  };
-  cell3.appendChild(textarea);
-  autoExpand(textarea);
 
-  saveData();
+    tr.querySelectorAll("input,textarea").forEach(el=>{
+      el.oninput = ()=>{
+        if(el.tagName==="TEXTAREA") autoExpand(el);
+        saveTable();
+      };
+    });
+  });
 }
 
+function addRow(){
+  if(!currentFolder) return alert("Select a folder first");
+  const data = getData();
+  data[currentFolder].push(["","",""]);
+  saveData(data);
+  loadTable();
+}
 
-loadData();
+function deleteRow(i){
+  const data = getData();
+  data[currentFolder].splice(i,1);
+  saveData(data);
+  loadTable();
+}
+
+function saveTable(){
+  if(!currentFolder) return;
+  const rows = [...document.querySelectorAll("#reportTable tr")].slice(1);
+  const data = getData();
+
+  data[currentFolder] = rows.map(r=>[
+    r.cells[0].querySelector("input").value,
+    r.cells[1].querySelector("input").value,
+    r.cells[2].querySelector("textarea").value
+  ]);
+
+  saveData(data);
+}
+
+/* INIT */
+renderFolders();
 </script>
+
 </body>
 </html>
