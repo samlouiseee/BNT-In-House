@@ -2,35 +2,47 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Weekly Report</title>
 
 <style>
-*{box-sizing:border-box}
-
 body{
   margin:0;
-  font-family:Segoe UI, sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   background:linear-gradient(135deg,#00b894,#0984e3);
 }
 
 .navbar{
+  position:relative;
+  z-index:5;
   display:flex;
-  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
   padding:10px 20px;
   background:rgba(238,237,237,.35);
   backdrop-filter:blur(6px);
 }
-.navbar button{
-  flex:1;
-  background:#74b9ff;
-  border:none;
-  padding:10px;
-  border-radius:8px;
-  color:#fff;
-  font-weight:bold;
+
+.navbar .logo{
+  height:90px;
+  margin-right:30px;
   cursor:pointer;
 }
+
+.navbar button{
+  background:#74b9ff;
+  border:none;
+  padding:5px 10px;
+  border-radius:8px;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  margin:3px;
+  flex:1;
+  min-width:100px;
+}
+
+.navbar button:hover{background:#0984e3;}
 
 .container{
   display:flex;
@@ -43,6 +55,7 @@ body{
   background:#fff;
   border-radius:12px;
   padding:10px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
 
 .folder{
@@ -51,7 +64,9 @@ body{
   border-radius:6px;
   margin-bottom:5px;
   cursor:pointer;
+  font-weight:bold;
 }
+
 .folder.active{
   background:#0984e3;
   color:#fff;
@@ -59,38 +74,38 @@ body{
 
 .section{
   flex:1;
-  background:#fff;
+  background:rgba(255,255,255,.95);
   padding:20px;
   border-radius:12px;
-  position:relative;
+  box-shadow:0 8px 20px rgba(0,0,0,.2);
+  min-height:400px;
 }
 
-/* PLACEHOLDER */
 .placeholder{
   display:flex;
   align-items:center;
   justify-content:center;
   height:100%;
-  min-height:300px;
   font-size:28px;
   font-weight:700;
   color:#b2b2b2;
   letter-spacing:1px;
 }
 
-/* TABLE */
 table{
   width:100%;
   border-collapse:collapse;
   margin-top:10px;
 }
+
 th,td{
-  border:1px solid #aaa;
+  border:1px solid #ccc;
   padding:6px;
   text-align:center;
   vertical-align:top;
 }
-th{background:#f2f2f2}
+
+th{background:#f2f2f2;}
 
 input, textarea{
   width:95%;
@@ -116,12 +131,15 @@ button.action{
   cursor:pointer;
   margin-top:10px;
 }
+
+button.action:hover{background:#0652dd;}
 </style>
 </head>
 
 <body>
 
 <div class="navbar">
+  <img src="VHBC.png" class="logo" onclick="location.href='index.html'">
   <button onclick="location.href='index.html'">Home</button>
   <button onclick="location.href='report.html'">Report</button>
   <button onclick="location.href='tripping.html'">Tripping & Sales</button>
@@ -132,22 +150,19 @@ button.action{
 
 <div class="container">
 
-  <!-- LEFT -->
+  <!-- LEFT FOLDER PANEL -->
   <div class="folders">
     <h3>Folders</h3>
     <div id="folderList"></div>
     <button class="action" onclick="addFolder()">Add Folder</button>
   </div>
 
-  <!-- RIGHT -->
+  <!-- RIGHT REPORT TABLE -->
   <div class="section" id="rightPanel">
-
-    <!-- DEFAULT PLACEHOLDER -->
     <div id="placeholder" class="placeholder">
       IN-HOUSE WEEKLY REPORTS
     </div>
 
-    <!-- TABLE WRAPPER -->
     <div id="tableWrapper" style="display:none;">
       <h2 id="title"></h2>
 
@@ -162,7 +177,6 @@ button.action{
 
       <button class="action" onclick="addRow()">Add Row</button>
     </div>
-
   </div>
 
 </div>
@@ -170,21 +184,19 @@ button.action{
 <script>
 let currentFolder = null;
 
-/* STORAGE */
 function getData(){
   return JSON.parse(localStorage.getItem("weeklyReportFolders") || "{}");
 }
+
 function saveData(data){
   localStorage.setItem("weeklyReportFolders", JSON.stringify(data));
 }
 
-/* AUTO EXPAND */
 function autoExpand(el){
   el.style.height = "auto";
   el.style.height = el.scrollHeight + "px";
 }
 
-/* FOLDERS */
 function addFolder(){
   const name = prompt("Folder name (e.g. November 2025)");
   if(!name) return;
@@ -216,13 +228,12 @@ function openFolder(name){
 
   document.getElementById("placeholder").style.display = "none";
   document.getElementById("tableWrapper").style.display = "block";
-
   document.getElementById("title").textContent = name;
+
   renderFolders();
   loadTable();
 }
 
-/* TABLE */
 function loadTable(){
   const table = document.getElementById("reportTable");
   table.innerHTML = `
