@@ -6,6 +6,8 @@
 <title>Manning Schedule</title>
 
 <style>
+*{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
@@ -20,9 +22,10 @@ body{
   justify-content:flex-start;
   flex-wrap:wrap;
   padding:10px 20px;
-  background:rgba(238, 237, 237, 0.35);
-  backdrop-filter: blur(6px);
+  background:rgba(238,237,237,0.35);
+  backdrop-filter:blur(6px);
 }
+
 .navbar button{
   background:#74b9ff;
   border:none;
@@ -34,13 +37,15 @@ body{
   flex:1;
   margin:3px;
 }
+
 .navbar button:hover{background:#0984e3}
 
-.logo {
-  height:90px; 
+.logo{
+  height:90px;
   margin-right:30px;
   cursor:pointer;
 }
+
 .section{
   background:#fff;
   margin:10px;
@@ -63,6 +68,7 @@ h2,h3{text-align:center}
   border-radius:5px;
   cursor:pointer;
 }
+
 #toggleTable:hover{background:#0652dd}
 
 .month-control{
@@ -72,6 +78,7 @@ h2,h3{text-align:center}
   gap:15px;
   margin-bottom:15px;
 }
+
 .month-control button{
   background:#0984e3;
   color:#fff;
@@ -80,6 +87,7 @@ h2,h3{text-align:center}
   border-radius:5px;
   cursor:pointer;
 }
+
 .month-control span{
   font-weight:bold;
   font-size:16px;
@@ -91,6 +99,7 @@ h2,h3{text-align:center}
   gap:4px;
   margin-bottom:15px;
 }
+
 .calendar div{
   border:1px solid #ccc;
   min-height:60px;
@@ -103,11 +112,14 @@ h2,h3{text-align:center}
   box-shadow:0 1px 3px rgba(0,0,0,.1);
   font-size:13px;
 }
+
 .calendar div:hover{background:#e0f7fa}
+
 .calendar strong{
   font-size:14px;
   margin-bottom:2px;
 }
+
 .calendar .note{
   flex:1;
   border-top:1px dashed #ccc;
@@ -122,6 +134,14 @@ h2,h3{text-align:center}
   text-align:center;
 }
 
+.calendar .day-header{
+  font-weight:bold;
+  text-align:center;
+  padding:6px 0;
+  background:#74b9ff;
+  color:#fff;
+  border-radius:4px;
+}
 
 #trackerTable{
   width:100%;
@@ -130,11 +150,13 @@ h2,h3{text-align:center}
   font-size:13px;
   display:none;
 }
-#trackerTable th, #trackerTable td{
+
+#trackerTable th,#trackerTable td{
   border:1px solid #aaa;
   padding:4px;
   text-align:center;
 }
+
 #trackerTable th{background:#f2f2f2}
 
 input.editable{
@@ -143,7 +165,7 @@ input.editable{
   background:transparent;
   text-align:center;
   font-size:13px;
-
+}
 
 button.action{
   background:#0984e3;
@@ -154,24 +176,15 @@ button.action{
   cursor:pointer;
   margin-top:5px;
 }
-button.action:hover{background:#0652dd}
 
-.calendar .day-header{
-  font-weight:bold;
-  text-align:center;
-  padding:6px 0;
-  background:#74b9ff;
-  color:#fff;
-  border-radius:4px;
-}
+button.action:hover{background:#0652dd}
 </style>
 </head>
 
 <body>
 
-
 <div class="navbar">
-  <img src="VHBC.png" alt="VHBC Logo" class="logo" onclick="location.href='index.html'">
+  <img src="VHBC.png" class="logo" onclick="location.href='index.html'">
   <button onclick="location.href='index.html'">Home</button>
   <button onclick="location.href='report.html'">Report</button>
   <button onclick="location.href='tripping.html'">Tripping & Sales</button>
@@ -183,7 +196,6 @@ button.action:hover{background:#0652dd}
 <div class="section">
   <h2>IN-HOUSE MANNING</h2>
 
- 
   <button id="toggleTable" onclick="toggleTable()">Show Tracker</button>
 
   <div class="month-control">
@@ -194,7 +206,8 @@ button.action:hover{background:#0652dd}
 
   <div class="calendar" id="calendar"></div>
 
-  <h3 id="trackerHeader" style="text-align:center; display:none;">IN-HOUSE MANNING</h3>
+  <h3 id="trackerHeader" style="display:none;">IN-HOUSE MANNING</h3>
+
   <table id="trackerTable">
     <tr>
       <th>DATE</th>
@@ -214,133 +227,90 @@ button.action:hover{background:#0652dd}
 let currentDate = new Date();
 
 function toggleTable(){
-  const table = document.getElementById('trackerTable');
-  const header = document.getElementById('trackerHeader');
-  const btn = document.getElementById('toggleTable');
-  if(table.style.display === "none"){
-    table.style.display = "table";
-    header.style.display = "block";
-    btn.textContent = "Hide Tracker";
-  } else {
-    table.style.display = "none";
-    header.style.display = "none";
-    btn.textContent = "Show Tracker";
-  }
+  const t=document.getElementById("trackerTable");
+  const h=document.getElementById("trackerHeader");
+  const b=document.getElementById("toggleTable");
+  const show=t.style.display==="none";
+  t.style.display=show?"table":"none";
+  h.style.display=show?"block":"none";
+  b.textContent=show?"Hide Tracker":"Show Tracker";
 }
 
 function saveData(){
-  const table = document.getElementById('trackerTable');
-  const tableData = [];
-  for(let r=1; r<table.rows.length; r++){ 
-    const row = [];
-    for(let c=0; c<table.rows[r].cells.length; c++){
-      const input = table.rows[r].cells[c].querySelector('input');
-      row.push(input ? input.value : '');
+  const table=document.getElementById("trackerTable");
+  const data=[];
+  for(let r=1;r<table.rows.length;r++){
+    const row=[];
+    for(let c=0;c<7;c++){
+      row.push(table.rows[r].cells[c].querySelector("input").value);
     }
-    tableData.push(row);
+    data.push(row);
   }
-  localStorage.setItem('trackerTable', JSON.stringify(tableData));
+  localStorage.setItem("trackerTable",JSON.stringify(data));
 
-  const notes = JSON.parse(localStorage.getItem('calendarNotes') || '{}');
-  document.querySelectorAll('.calendar div.note-cell').forEach(div=>{
-    const key = div.dataset.date;
-    notes[key] = div.querySelector('.note').innerHTML;
+  const notes={};
+  document.querySelectorAll(".note-cell").forEach(d=>{
+    notes[d.dataset.date]=d.querySelector(".note").innerHTML;
   });
-  localStorage.setItem('calendarNotes', JSON.stringify(notes));
+  localStorage.setItem("calendarNotes",JSON.stringify(notes));
 }
-
 
 function loadData(){
+  const table=document.getElementById("trackerTable");
+  const data=JSON.parse(localStorage.getItem("trackerTable")||"[]");
+  while(table.rows.length>1)table.deleteRow(1);
+  data.forEach(r=>addRow(r));
 
-  const table = document.getElementById('trackerTable');
-  const tableData = JSON.parse(localStorage.getItem('trackerTable') || '[]');
-  while(table.rows.length > 1) table.deleteRow(1);
-
-  tableData.forEach(rowData => {
-    addRow(rowData);
-  });
-
-
-  const notes = JSON.parse(localStorage.getItem('calendarNotes')||'{}');
-  document.querySelectorAll('.calendar div.note-cell').forEach(div=>{
-    const key = div.dataset.date;
-    if(notes[key]) div.querySelector('.note').innerHTML = notes[key];
+  const notes=JSON.parse(localStorage.getItem("calendarNotes")||"{}");
+  document.querySelectorAll(".note-cell").forEach(d=>{
+    d.querySelector(".note").innerHTML=notes[d.dataset.date]||"";
   });
 }
 
-function addRow(values = []){
-  const table = document.getElementById('trackerTable');
-  const row = table.insertRow(-1);
-
-  for(let i=0; i<7; i++){
-    const cell = row.insertCell();
-    const input = document.createElement('input');
-    input.className = 'editable';
-    input.value = values[i] || '';
-    input.oninput = saveData; // save whenever input changes
-    cell.appendChild(input);
+function addRow(values=[]){
+  const row=document.getElementById("trackerTable").insertRow();
+  for(let i=0;i<7;i++){
+    const c=row.insertCell();
+    const iEl=document.createElement("input");
+    iEl.className="editable";
+    iEl.value=values[i]||"";
+    iEl.oninput=saveData;
+    c.appendChild(iEl);
   }
-
-  saveData(); // save table after adding row
+  saveData();
 }
-
-/* Restore input events for old rows (if needed) */
-function restoreInputs(){
-  document.querySelectorAll("input.editable").forEach(i=>{
-    i.oninput = saveData;
-  });
-}
-
 
 function buildCalendar(){
-  const cal = document.getElementById("calendar");
-  cal.innerHTML = "";
+  const cal=document.getElementById("calendar");
+  cal.innerHTML="";
+  const y=currentDate.getFullYear();
+  const m=currentDate.getMonth();
+  document.getElementById("monthLabel").textContent=
+    currentDate.toLocaleString("default",{month:"long"})+" "+y;
 
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
-
-  const monthName = currentDate.toLocaleString('default',{month:'long'});
-  document.getElementById("monthLabel").textContent = `${monthName} ${year}`;
-
-  // Days header
-  const daysOfWeek = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
-  daysOfWeek.forEach(day=>{
-    const div = document.createElement("div");
-    div.className = "day-header";
-    div.textContent = day;
-    cal.appendChild(div);
+  ["SUN","MON","TUE","WED","THU","FRI","SAT"].forEach(d=>{
+    const h=document.createElement("div");
+    h.className="day-header";
+    h.textContent=d;
+    cal.appendChild(h);
   });
 
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const notes = JSON.parse(localStorage.getItem('calendarNotes')||'{}');
+  const first=new Date(y,m,1).getDay();
+  const days=new Date(y,m+1,0).getDate();
+  for(let i=0;i<first;i++)cal.appendChild(document.createElement("div"));
 
-  // Empty cells before first day
-  for(let i=0; i<firstDay; i++){
-    const emptyDiv = document.createElement("div");
-    cal.appendChild(emptyDiv);
-  }
-
-  // Dates
-  for(let d=1; d<=daysInMonth; d++){
-    const div = document.createElement("div");
-    div.className = "note-cell";
-    const key = d + '-' + month + '-' + year; // unique key
-    div.dataset.date = key;
-    const noteContent = notes[key] || '';
-
-    div.innerHTML = `
-      <strong>${d}</strong>
-      <div class="note" contenteditable="true">${noteContent}</div>
-    `;
-
-    // Save on input immediately
-    div.querySelector('.note').addEventListener('input', saveData);
-    cal.appendChild(div);
+  const notes=JSON.parse(localStorage.getItem("calendarNotes")||"{}");
+  for(let d=1;d<=days;d++){
+    const cell=document.createElement("div");
+    cell.className="note-cell";
+    const key=`${d}-${m}-${y}`;
+    cell.dataset.date=key;
+    cell.innerHTML=`<strong>${d}</strong><div class="note" contenteditable="true">${notes[key]||""}</div>`;
+    cell.querySelector(".note").addEventListener("input",saveData);
+    cal.appendChild(cell);
   }
 }
 
-/* MONTH CONTROL */
 function changeMonth(step){
   currentDate.setMonth(currentDate.getMonth()+step);
   buildCalendar();
